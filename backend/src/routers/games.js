@@ -14,9 +14,7 @@ const {
 } = require("../validators/games");
 const { errorCheck } = require("../validators/errorCheck");
 
-router.get("/game_info/seed", seedGames);
 router.get("/game_info", getAllGames);
-router.put("/favourites", validateAddGame, errorCheck, addFavourites);
 router.post(
   "/favourites",
   validateUserInBody,

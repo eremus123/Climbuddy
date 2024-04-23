@@ -1,5 +1,4 @@
 const Games = require("../models/Games");
-const Favourites = require("../models/Favourites");
 
 const getAllGames = async (req, res) => {
   try {
