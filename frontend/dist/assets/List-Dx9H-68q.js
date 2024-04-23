@@ -1,0 +1,1 @@
+import{j as s,L as e}from"./index-kSYidmcd.js";const i=()=>s.jsxs("ul",{children:[s.jsx("li",{children:s.jsx(e,{to:"/members/a",children:"A"})}),s.jsx("li",{children:s.jsx(e,{to:"/members/b",children:"B"})}),s.jsx("li",{children:s.jsx(e,{to:"/members/c",children:"C"})})]});export{i as default};
