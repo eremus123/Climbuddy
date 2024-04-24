@@ -1,5 +1,5 @@
-CREATE DATABASE climbuddy;
 CREATE USER db_user WITH ENCRYPTED PASSWORD 'example';
+CREATE DATABASE climbuddy;
 \c climbuddy;
 GRANT ALL ON SCHEMA public TO db_user;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -14,8 +14,8 @@ CREATE TABLE gyms(
 
 CREATE TABLE passes(
  username VARCHAR(20),
- purchasedate DATE,
- expirydate DATE,
+ purchasedate timestamp DEFAULT now(),
+ expirydate timestamp,
  costprice SMALLINT,
  sellingprice SMALLINT,
  quantity SMALLINT,
@@ -34,20 +34,21 @@ CREATE TABLE sessions(
 
 CREATE TABLE users(
  username VARCHAR(20) PRIMARY KEY,
- password VARCHAR(50),
- gymid INTEGER NOT NULL,
- sessionid INTEGER NOT NULL,
- CONSTRAINT fk_gym FOREIGN KEY (gymid) REFERENCES gyms(id),
+ hash TEXT,
+ role VARCHAR(10) DEFAULT 'user',
+ created_at timestamp DEFAULT now(),
+ sessionid INTEGER,
  CONSTRAINT fk_session FOREIGN KEY (sessionid) REFERENCES sessions(id)
 );
 
 CREATE TABLE roles(
- role VARCHAR(10) PRIMARY KEY
+ role VARCHAR(10) PRIMARY KEY,
+  created_at DATE
 );
 
 INSERT INTO roles(role) VALUES ('user'),('admin');
 
-INSERT INTO gyms(gymname, address, openingghours) VALUES
+INSERT INTO gyms(gymname, address, openinghours) VALUES
 	('Adventure HQ', '2 Yishun Walk, Singapore 767944', 'Mon Closed; Tue-Fri 2pm-9.30pm; Sat-Sun,PH 10am-9.30pm'),
 	('Arête by Upwall', '5 Changi Business Park Central 1, #02 14/15/16, Singapore 486038', 'Mon-Fri 11am-10.30pm; Sat 9.30am-10.30pm; Sun 9.30am-8pm'),
 	('Ark Bloc', '6 Tebing Lane, #01-05, Singapore 828835', 'Mon-Fri 8am-12pm, 3pm-10pm; Sat-Sun 10am-10pm'),
