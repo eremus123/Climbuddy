@@ -43,7 +43,7 @@ CREATE TABLE users(
 
 CREATE TABLE roles(
  role VARCHAR(10) PRIMARY KEY,
-  created_at DATE
+  created_at timestamp DEFAULT now()
 );
 
 INSERT INTO roles(role) VALUES ('user'),('admin');
@@ -89,3 +89,6 @@ INSERT INTO gyms(gymname, address, openinghours) VALUES
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO db_user;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO db_user;
+
+
+ALTER TABLE users ALTER COLUMN sessionid DROP NOT NULL;
