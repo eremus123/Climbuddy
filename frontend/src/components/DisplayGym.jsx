@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import UpdateModal from "./UpdateModal";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user";
 
 const DisplayGym = (props) => {
   //users
@@ -12,189 +14,65 @@ const DisplayGym = (props) => {
   const searchRef = useRef();
   const abortController = new AbortController();
 
-  const getGame = async () => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const searchgame = searchRef.current.value;
-    setGameNames([]);
+  //implement;
+  const userCtx = useContext(UserContext);
+  const [gyms, setGyms] = useState([]);
+  const fetchData = useFetch();
 
-    try {
-      const req = new XMLHttpRequest();
-      req.open(
-        "GET",
-        "https://www.boardgamegeek.com/xmlapi2/search?type=boardgame,boardgameexpansion&query=" +
-          searchgame,
-        true
-      );
-      req.onload = async () => {
-        if (req.status === 200) {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(req.responseText, "text/xml");
-          const items = xmlDoc.getElementsByTagName("item");
-          const names = await Promise.all(
-            Array.from(items).map(async (item, i) => {
-              const gameName = item
-                .getElementsByTagName("name")[0]
-                .getAttribute("value");
-              const gameId = item.getAttribute("id"); // Extract the game ID
-              const imgUrl = await props.getImageUrl(gameId);
-              return {
-                name: `${i + 1}. ${gameName} (ID: ${gameId})`,
-                id: gameId,
-                imgUrl: imgUrl,
-              };
-            })
-          );
+  const titleRef = useRef();
+  const authorRef = useRef();
+  const yearRef = useRef();
 
-          setGameNames(names);
-        }
-      };
-      req.send(null);
-    } catch (error) {
-      console.error(error.message);
+  const getGyms = async () => {
+    const res = await fetchData("/gyms", "GET", undefined, undefined);
+    if (res.ok) {
+      setGyms(res.data);
+      console.log(gyms);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
-
-  const addGame = async () => {
-    try {
-      // Extract the game ID from the selectedGameName string
-      const gameIdMatch = selectedGameName.match(/\(ID: (\d+)\)/);
-      const gameId = gameIdMatch ? gameIdMatch[1] : null; // Extract the game ID
-      const selectedGame = gameNames.find(
-        (game) => game.name === selectedGameName
-      );
-      const imgUrl = selectedGame ? selectedGame.imgUrl : ""; // Extract the imgUrl from the selected game
-      // Get the current date/time in ISO format
-      const dateAdded = new Date().toISOString().split("T")[0];
-      //Store only the game Name:
-      const gameNameMatch = selectedGameName.match(/^\d+\.\s*(.*?)\s*\(/);
-      const gameName = gameNameMatch ? gameNameMatch[1] : selectedGameName; // Use the extracted game name or the original string if no match
-
-      const res = await fetch(
-        "https://api.airtable.com/v0/appnFG2kbIVgZNH8a/boardgames",
-        {
-          method: "POST", // Specify the method if not 'GET'
-          headers: {
-            Authorization: import.meta.env.VITE_TOKEN,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fields: {
-              owner: userName,
-              group: userGroup,
-              gameid: parseInt(gameId),
-              gamename: gameName,
-              plays: 0,
-              status: "owned",
-              dateadded: dateAdded,
-              imageurl: imgUrl,
-            },
-            typecast: true,
-          }),
-        }
-      );
-
-      if (res.ok) {
-        //clear the form and hide the modal
-        setUserName("");
-        setUserGroup("");
-        searchRef.current.value = "";
-        setShowModal(false);
-        window.location.reload(); //refresh to update the UI
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.log(error.message);
-      }
-    }
-  };
-
-  const addWishlist = async () => {
-    try {
-      // Extract the game ID from the selectedGameName string
-      const gameIdMatch = selectedGameName.match(/\(ID: (\d+)\)/);
-      const gameId = gameIdMatch ? gameIdMatch[1] : null; // Extract the game ID
-      // Get the current date/time in ISO format
-      const selectedGame = gameNames.find(
-        (game) => game.name === selectedGameName
-      );
-      const imgUrl = selectedGame ? selectedGame.imgUrl : ""; // Extract the imgUrl from the selected game
-      const dateAdded = new Date().toISOString().split("T")[0];
-      //Store only the game Name:
-      const gameNameMatch = selectedGameName.match(/^\d+\.\s*(.*?)\s*\(/);
-      const gameName = gameNameMatch ? gameNameMatch[1] : selectedGameName; // Use the extracted game name or the original string if no match
-
-      const res = await fetch(
-        "https://api.airtable.com/v0/appnFG2kbIVgZNH8a/boardgames",
-        {
-          method: "POST",
-          headers: {
-            Authorization: import.meta.env.VITE_TOKEN,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fields: {
-              owner: userName,
-              group: userGroup,
-              gameid: parseInt(gameId),
-              gamename: gameName,
-              plays: 0,
-              status: "wishlist",
-              dateadded: dateAdded,
-              imageurl: imgUrl,
-            },
-            typecast: true,
-          }),
-        }
-      );
-
-      if (res.ok) {
-        console.log("Game wishlist successfully");
-        //clear the form and hide the modal
-        setUserName("");
-        setUserGroup("");
-        searchRef.current.value = "";
-        setShowModal(false);
-        window.location.reload(); //refresh to update the UI
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.log(error.message);
-      }
-    }
-  };
-
-  const [recentGames, setRecentGames] = useState([]);
-  const fetchGames = async () => {
-    try {
-      const res = await fetch(
-        "https://api.airtable.com/v0/appnFG2kbIVgZNH8a/boardgames?maxRecords=30&view=Grid%20view&sort%5B0%5D%5Bfield%5D=dateadded&sort%5B0%5D%5Bdirection%5D=desc",
-        {
-          method: "GET",
-          headers: {
-            Authorization: import.meta.env.VITE_TOKEN,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setRecentGames(data.records);
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.log(error.message);
-      }
-    }
-  };
-
-  //use effects
+  //end
   useEffect(() => {
-    fetchGames();
-    return () => {
-      // Abort all ongoing fetch requests when the component unmounts
-      abortController.abort();
-    };
+    getGyms();
   }, []);
+
+  const addBook = async () => {
+    const res = await fetchData(
+      "/api/books",
+      "PUT",
+      {
+        title: titleRef.current.value,
+        author: authorRef.current.value,
+        year: yearRef.current.value,
+      },
+      userCtx.accessToken
+    );
+
+    if (res.ok) {
+      getBooks();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
+  const deleteBook = async (id) => {
+    const res = await fetchData(
+      "/api/books/" + id,
+      "DELETE",
+      undefined,
+      userCtx.accessToken
+    );
+
+    if (res.ok) {
+      getBooks();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
 
   return (
     <div className="container">
@@ -278,20 +156,21 @@ const DisplayGym = (props) => {
 
       <div className="row">
         <div className="col-sm-2">Name</div>
-        <div className="col-sm-2">Opening Hours</div>
+        <div className="col-sm-3">Opening Hours</div>
         <div className="col-sm-3">Address</div>
-        <div className="col-sm-2">Last Visited</div>
-        <div className="col-sm-2">Last Reset</div>
+        <div className="col-sm-1">Last Visited</div>
+        <div className="col-sm-1">Last Reset</div>
       </div>
-      {recentGames.map((game) => (
-        <div key={game.id} className="row">
-          <div className="col-sm-5">{game.fields.gamename}</div>
-          <div className="col-sm-1">{game.fields.gameid}</div>
-          <div className="col-sm-1">{game.fields.owner}</div>
-          <div className="col-sm-2">{game.fields.dateadded}</div>
-          <div className="col-sm-1">{game.fields.status}</div>
+
+      {gyms.map((gym) => (
+        <div key={gym.id} className="row">
+          <div className="col-sm-2">{gym.gymname}</div>
+          <div className="col-sm-3">{gym.address}</div>
+          <div className="col-sm-3">{gym.openingghours}</div>
+          <div className="col-sm-1">{gym.datereset}</div>
+          <div className="col-sm-1">{gym.datereset}</div>
           <button className="col-sm-1" onClick={() => props.delGame(game.id)}>
-            Update Details
+            Update
           </button>
           <button
             className="col-sm-1"
@@ -303,7 +182,7 @@ const DisplayGym = (props) => {
               props.setShowUpdateModal(true);
             }}
           >
-            Delete Gym
+            Delete
           </button>
         </div>
       ))}
