@@ -1,43 +1,48 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import styles from "./Modal.module.css";
+import useFetch from "../hooks/useFetch";
+import UserContext from "../context/user"; // add this too
+import { useContext } from "react"; // auto add this
 
-const Overlay = (props) => {
-  const gamenameRef = useRef();
-  const gameidRef = useRef();
-  const groupRef = useRef();
-  const ownerRef = useRef();
-  const statusRef = useRef();
-  const recordId = props.recordid;
-  const newdate = new Date().toISOString().split("T")[0];
+const OverLay = (props) => {
+  const fetchData = useFetch();
+  const nameRef = useRef("");
+  const hoursRef = useRef("");
+  const addressRef = useRef("");
+  const resetRef = useRef("");
 
-  const updateGame = async () => {
-    const res = await fetch(
-      "https://api.airtable.com/v0/appnFG2kbIVgZNH8a/boardgames/" + recordId,
+  const userCtx = useContext(UserContext); //add this
+
+  const updateGym = async (id) => {
+    const res = await fetchData(
+      "/gyms/updategym" + id,
+      "PATCH",
       {
-        method: "PATCH",
-        headers: {
-          Authorization: import.meta.env.VITE_TOKEN,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fields: {
-            gameid: parseInt(gameidRef.current.value),
-            gamename: gamenameRef.current.value,
-            owner: ownerRef.current.value,
-            group: groupRef.current.value,
-            status: statusRef.current.value,
-            dateadded: newdate,
-          },
-          typecast: true,
-        }),
-      }
+        gymname: nameRef.current.value,
+        address: addressRef.current.value,
+        openinghours: hoursRef.current.value,
+        datereset: resetRef.current.value,
+      },
+      undefined
+      // userCtx.accessToken // add this
     );
+
     if (res.ok) {
-      props.fetchGames();
+      props.getGyms();
       props.setShowUpdateModal(false);
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
     }
   };
+
+  useEffect(() => {
+    nameRef.current.value = props.gymname;
+    addressRef.current.value = props.address;
+    resetRef.current.value = props.datereset;
+    hoursRef.current.value = props.openinghours;
+  }, []);
 
   return (
     <div className={styles.backdrop}>
@@ -46,77 +51,46 @@ const Overlay = (props) => {
         <br />
         <div className="row">
           <div className="col-md-3"></div>
-          <div className="col-md-3">Game Name</div>
-          <input
-            ref={gamenameRef}
-            type="text"
-            className="col-md-3"
-            defaultValue={props.gamename}
-          />
+          <div className="col-md-3">Title</div>
+          <input ref={nameRef} type="text" className="col-md-3" />
           <div className="col-md-3"></div>
         </div>
+
         <div className="row">
           <div className="col-md-3"></div>
-          <div className="col-md-3">gameid</div>
-          <input
-            ref={gameidRef}
-            type="text"
-            className="col-md-3"
-            defaultValue={props.gameid}
-          />
+          <div className="col-md-3">Author</div>
+          <input ref={addressRef} type="text" className="col-md-3" />
           <div className="col-md-3"></div>
         </div>
+
         <div className="row">
           <div className="col-md-3"></div>
-          <div className="col-md-3">group</div>
-          <input
-            ref={groupRef}
-            type="text"
-            className="col-md-3"
-            defaultValue={props.group}
-          />
+          <div className="col-md-3">Year Published</div>
+          <input ref={resetRef} type="text" className="col-md-3" />
           <div className="col-md-3"></div>
-          <div className="row">
-            <div className="col-md-3"></div>
-            <div className="col-md-3">owner</div>
-            <input
-              ref={ownerRef}
-              type="text"
-              className="col-md-3"
-              defaultValue={props.owner}
-            />
-            <div className="col-md-3"></div>
-          </div>
-          <div className="row">
-            <div className="col-md-3"></div>
-            <div className="col-md-3">status</div>
-            <input
-              ref={statusRef}
-              type="text"
-              className="col-md-3"
-              defaultValue={props.status}
-            />
-            <div className="col-md-3"></div>
-          </div>
+        </div>
 
-          <br />
+        <div className="row">
+          <div className="col-md-3"></div>
+          <div className="col-md-3">opening hours </div>
+          <input ref={hoursRef} type="text" className="col-md-3" />
+          <div className="col-md-3"></div>
+        </div>
 
-          <div className="row">
-            <div className="col-md-3"></div>
-            <button
-              onClick={() => updateGame(props.recordid)}
-              className="col-md-3"
-            >
-              update
-            </button>
-            <button
-              className="col-md-3"
-              onClick={() => props.setShowUpdateModal(false)}
-            >
-              cancel
-            </button>
-            <div className="col-md-3"></div>
-          </div>
+        <br />
+
+        <div className="row">
+          <div className="col-md-3"></div>
+          <button onClick={() => updateGym(props.id)} className="col-md-3">
+            update
+          </button>
+          <button
+            onClick={() => props.setShowUpdateModal(false)}
+            className="col-md-3"
+          >
+            cancel
+          </button>
+          <div className="col-md-3"></div>
         </div>
       </div>
     </div>
@@ -127,19 +101,16 @@ const UpdateModal = (props) => {
   return (
     <>
       {ReactDOM.createPortal(
-        <Overlay
-          gameid={props.gameid}
-          gamename={props.gamename}
-          group={props.group}
-          owner={props.owner}
-          status={props.status}
-          fetchGames={props.fetchGames}
-          recordid={props.recordid}
+        <OverLay
+          id={props.id}
+          gymname={props.gymname}
+          address={props.address}
+          openinghours={props.openinghours}
           setShowUpdateModal={props.setShowUpdateModal}
-        ></Overlay>,
+          getGyms={props.getGyms}
+        />,
         document.querySelector("#modal-root")
       )}
-      ;
     </>
   );
 };
