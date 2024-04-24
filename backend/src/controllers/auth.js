@@ -1,16 +1,20 @@
-const AuthModel = require("../Models/Auth");
+const { Pool } = require("pg");
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URI,
+});
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await AuthModel.find();
+    const result = await pool.query("SELECT username, role FROM users");
+    const users = result.rows;
 
-    const outputArray = [];
-    for (const user of users) {
-      outputArray.push({ username: user.username, role: user.role });
-    }
+    const outputArray = users.map((user) => ({
+      username: user.username,
+      role: user.role,
+    }));
 
     res.json(outputArray);
   } catch (error) {
@@ -21,22 +25,20 @@ const getAllUsers = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    //1. check duplicates:
-    const auth = await AuthModel.findOne({ username: req.body.username });
-    if (auth) {
+    const auth = await pool.query("SELECT * FROM users WHERE username = $1", [
+      req.body.username,
+    ]);
+    if (auth.rowCount > 0) {
       return res.status(400).json({
         status: "error",
         msg: "This username has already been taken. Please choose another username.",
       });
     }
-    //2. hash password:
     const hash = await bcrypt.hash(req.body.password, 12);
-    //3. store
-    await AuthModel.create({
-      username: req.body.username,
-      hash,
-      role: req.body.role || "user",
-    });
+    await pool.query(
+      "INSERT INTO users (username, hash, role, created_at) VALUES ($1, $2, $3, NOW())",
+      [req.body.username, hash, req.body.role || "user"]
+    );
     res.json({ status: "ok", msg: "User created successfully." });
   } catch (error) {
     console.error(error.message);
@@ -46,21 +48,26 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    //1. get user:
-    const auth = await AuthModel.findOne({ username: req.body.username });
-    if (!auth) {
-      return res.status(400).json({ status: "error", msg: "Username is incorrect. Please try again." });
+    const auth = await pool.query("SELECT * FROM users WHERE username = $1", [
+      req.body.username,
+    ]);
+    if (auth.rowCount === 0) {
+      return res.status(400).json({
+        status: "error",
+        msg: "Username/Password is incorrect. Please try again.",
+      });
     }
-    //2.compare hash:
-    const result = await bcrypt.compare(req.body.password, auth.hash);
+    const result = await bcrypt.compare(req.body.password, auth.rows[0].hash);
     if (!result) {
       console.error("username or password error");
-      return res.status(401).json({ status: "error", msg: "Password is incorrect. Please try again" });
+      return res.status(401).json({
+        status: "error",
+        msg: "Username/Password is incorrect. Please try again",
+      });
     }
-    //3. create tokens:
     const claims = {
-      username: auth.username,
-      role: auth.role,
+      username: auth.rows[0].username,
+      role: auth.rows[0].role,
     };
     const access = jwt.sign(claims, process.env.ACCESS_SECRET, {
       expiresIn: "20m",
