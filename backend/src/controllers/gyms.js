@@ -16,7 +16,7 @@ const getAllGyms = async (req, res) => {
 const addNewGym = async (req, res) => {
   try {
     const { gymname, address, openinghours, resetdate } = req.body;
-    const query = `INSERT INTO gyms (gymname, address, openingghours,resetdate) VALUES ($1, $2, $3, $4) RETURNING *`; //$placeholder to prevent sql injection attack
+    const query = `INSERT INTO gyms (gymname, address, openinghours,resetdate) VALUES ($1, $2, $3, $4) RETURNING *`; //$placeholder to prevent sql injection attack
     const result = await pool.query(query, [
       gymname,
       address,
@@ -47,7 +47,7 @@ const updateGym = async (req, res) => {
       values.push(address);
     }
     if (openinghours !== undefined) {
-      setClause += `openingghours = $${index++}, `;
+      setClause += `openinghours = $${index++}, `;
       values.push(openinghours);
     }
     if (resetdate !== undefined) {
