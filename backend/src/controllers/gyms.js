@@ -13,63 +13,79 @@ const getAllGyms = async (req, res) => {
   }
 };
 
-// const getGameByUserPlaylist = async (req, res) => {
-//   try {
-//     const game = await Favourites.find({
-//       username: req.body.username,
-//     })
-//       .select("id")
-//       .select("slug")
-//       .select("name")
-//       .select("released")
-//       .select("background_image")
-//       .select("platforms")
-//       .select("short_screenshots")
-//       .select("genres")
-//       .select("parent_platforms")
-//       .select("status");
-//     res.json(game);
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(400).json({ status: "error", msg: "error getting game" });
-//   }
-// };
+const addNewGym = async (req, res) => {
+  try {
+    const { gymname, address, openinghours, resetdate } = req.body;
+    const query = `INSERT INTO gyms (gymname, address, openingghours,resetdate) VALUES ($1, $2, $3, $4) RETURNING *`; //$placeholder to prevent sql injection attack
+    const result = await pool.query(query, [
+      gymname,
+      address,
+      openinghours,
+      resetdate,
+    ]);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error adding new gym" });
+  }
+};
 
-// const getFavourites = async (req, res) => {
-//   try {
-//     const favourites = await Favourites.find();
-//     res.json(favourites);
-//   } catch (error) {
-//     console.error(error.message);
-//     res.json({ status: "error", msg: "error getting favourites" });
-//   }
-// };
+const updateGym = async (req, res) => {
+  try {
+    const { gymname, address, openinghours, resetdate } = req.body;
+    const { gymId } = req.params;
+    // Dynamically construct the SET part of the query
+    let setClause = "";
+    let values = [];
+    let index = 1;
+    if (gymname !== undefined) {
+      setClause += `gymname = $${index++}, `;
+      values.push(gymname);
+    }
+    if (address !== undefined) {
+      setClause += `address = $${index++}, `;
+      values.push(address);
+    }
+    if (openinghours !== undefined) {
+      setClause += `openingghours = $${index++}, `;
+      values.push(openinghours);
+    }
+    if (resetdate !== undefined) {
+      setClause += `resetdate = $${index++}, `;
+      values.push(resetdate);
+    }
+    // Remove the trailing comma and space
+    setClause = setClause.slice(0, -2);
+    const query = `UPDATE gyms SET ${setClause} WHERE id = $${index} RETURNING *`;
+    values.push(gymId);
 
-// const updateGame = async (req, res) => {
-//   try {
-//     // Use the $set operator to update only the specified fields
-//     await Favourites.findByIdAndUpdate(
-//       req.params.id,
-//       { $set: req.body },
-//       { new: true } // This option returns the updated document
-//     );
-//     res.json({ status: "ok", msg: "game updated" });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(400).json({ status: "error", msg: "error updating game" });
-//   }
-// };
+    const result = await pool.query(query, values);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error updating gym" });
+  }
+};
 
-// const removeGame = async (req, res) => {
-//   try {
-//     await Favourites.findByIdAndDelete(req.params.id);
-//     res.json({ status: "ok", msg: "game deleted" });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(400).json({ status: "error", msg: "error deleting game" });
-//   }
-// };
+const deleteGym = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = "DELETE FROM gyms WHERE id = $1";
+
+    const result = await pool.query(query, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Gym not found" });
+    }
+    res.json({ message: "Gym deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error deleting gym" });
+  }
+};
 
 module.exports = {
   getAllGyms,
+  addNewGym,
+  updateGym,
+  deleteGym,
 };
