@@ -13,7 +13,7 @@ const DisplayGym = (props) => {
   const resetRef = useRef();
 
   const getGyms = async () => {
-    const res = await fetchData("/gyms", "GET", undefined, undefined);
+    const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
     if (res.ok) {
       setGyms(res.data);
       console.log(gyms);
@@ -36,8 +36,7 @@ const DisplayGym = (props) => {
         openinghours: hoursRef.current.value,
         datereset: resetRef.current.value,
       },
-      undefined
-      // userCtx.accessToken
+      userCtx.accessToken
     );
     if (res.ok) {
       getGyms();
@@ -52,8 +51,7 @@ const DisplayGym = (props) => {
       "/gyms/deletegym/" + id,
       "DELETE",
       undefined,
-      undefined
-      // userCtx.accessToken
+      userCtx.accessToken
     );
     if (res.ok) {
       getGyms();
@@ -73,8 +71,8 @@ const DisplayGym = (props) => {
         openinghours: hoursRef.current.value,
         datereset: resetRef.current.value,
       },
-      undefined
-      // userCtx.accessToken // add this ltr
+
+      userCtx.accessToken // add this ltr
     );
     if (res.ok) {
       getGyms();
