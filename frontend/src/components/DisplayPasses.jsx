@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
-const DisplayPasses = (props) => {
+const DisplayGym = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
   const fetchData = useFetch();
@@ -13,7 +13,7 @@ const DisplayPasses = (props) => {
   const resetRef = useRef();
 
   const getGyms = async () => {
-    const res = await fetchData("/gyms", "GET", undefined, undefined);
+    const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
     if (res.ok) {
       setGyms(res.data);
       console.log(gyms);
@@ -36,8 +36,7 @@ const DisplayPasses = (props) => {
         openinghours: hoursRef.current.value,
         datereset: resetRef.current.value,
       },
-      undefined
-      // userCtx.accessToken
+      userCtx.accessToken
     );
     if (res.ok) {
       getGyms();
@@ -52,8 +51,7 @@ const DisplayPasses = (props) => {
       "/gyms/deletegym/" + id,
       "DELETE",
       undefined,
-      undefined
-      // userCtx.accessToken
+      userCtx.accessToken
     );
     if (res.ok) {
       getGyms();
@@ -73,8 +71,7 @@ const DisplayPasses = (props) => {
         openinghours: hoursRef.current.value,
         datereset: resetRef.current.value,
       },
-      undefined
-      // userCtx.accessToken // add this ltr
+      userCtx.accessToken
     );
     if (res.ok) {
       getGyms();
@@ -86,42 +83,50 @@ const DisplayPasses = (props) => {
 
   return (
     <div className="container">
-      <h1>Add New Gym: </h1>
-      <br />
-      <form>
-        <div className="row">
-          <input
-            type="text"
-            ref={nameRef}
-            placeholder="Gym Name"
-            className="col-md-2"
-          ></input>
-          <input
-            type="text"
-            ref={addressRef}
-            placeholder="Address"
-            className="col-md-2"
-          ></input>
-          <input
-            type="text"
-            ref={hoursRef}
-            placeholder="Opening Hours"
-            className="col-md-2"
-          ></input>
-          <input
-            type="text"
-            ref={resetRef}
-            placeholder="Last Reset"
-            className="col-md-2"
-          ></input>
+      {userCtx.role === "admin" && (
+        <>
+          <h1>Add New Gym: </h1>
+          <br />
+          <form>
+            <div className="row">
+              <input
+                type="text"
+                ref={nameRef}
+                placeholder="Gym Name"
+                className="col-md-2"
+              ></input>
+              <input
+                type="text"
+                ref={addressRef}
+                placeholder="Address"
+                className="col-md-2"
+              ></input>
+              <input
+                type="text"
+                ref={hoursRef}
+                placeholder="Opening Hours"
+                className="col-md-2"
+              ></input>
+              <input
+                type="text"
+                ref={resetRef}
+                placeholder="Last Reset"
+                className="col-md-2"
+              ></input>
 
-          <button type="submit" className="col-md-3" onClick={() => addGym()}>
-            Add
-          </button>
-        </div>
-      </form>
+              <button
+                type="submit"
+                className="col-md-3"
+                onClick={() => addGym()}
+              >
+                Add
+              </button>
+            </div>
+          </form>
+          <br />
+        </>
+      )}
 
-      <br />
       <br />
       <h2>All Gyms:</h2>
 
@@ -138,16 +143,20 @@ const DisplayPasses = (props) => {
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
           <div className="col-sm-1">{gym.datereset}</div>
-          <button className="col-sm-1" onClick={() => updateGym(gym.id)}>
-            Update
-          </button>
-          <button className="col-sm-1" onClick={() => deleteGym(gym.id)}>
-            Delete
-          </button>
+          {userCtx.role === "admin" && (
+            <>
+              <button className="col-sm-1" onClick={() => updateGym(gym.id)}>
+                Update
+              </button>
+              <button className="col-sm-1" onClick={() => deleteGym(gym.id)}>
+                Delete
+              </button>
+            </>
+          )}
         </div>
       ))}
     </div>
   );
 };
 
-export default DisplayPasses;
+export default DisplayGym;
