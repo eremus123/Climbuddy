@@ -3,6 +3,19 @@ const pool = new Pool({
   connectionString: process.env.POSTGRES_URI,
 });
 
+const getUserSessions = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE hostname = '${username}'`
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.json({ status: "error", msg: "error getting your sessions" });
+  }
+};
+
 const getAllSessions = async (req, res) => {
   try {
     const result = await pool.query(
@@ -11,7 +24,7 @@ const getAllSessions = async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error(error.message);
-    res.json({ status: "error", msg: "error getting all sesions" });
+    res.json({ status: "error", msg: "error getting all sessions" });
   }
 };
 
@@ -51,7 +64,7 @@ const updateSession = async (req, res) => {
     }
     // Remove the trailing comma and space
     setClause = setClause.slice(0, -2);
-    const query = `UPDATE sesions SET ${setClause} WHERE id = $${index} RETURNING *`;
+    const query = `UPDATE sesions SET ${setClause} WHERE id = ${index} RETURNING *`;
     values.push(id);
 
     const result = await pool.query(query, values);
@@ -83,4 +96,5 @@ module.exports = {
   addNewSession,
   updateSession,
   deleteSession,
+  getUserSessions,
 };
