@@ -13,6 +13,7 @@ CREATE TABLE gyms(
 );
 
 CREATE TABLE passes(
+ id SERIAL PRIMARY KEY,
  username VARCHAR(20),
  purchasedate timestamp DEFAULT now(),
  expirydate timestamp,
@@ -91,4 +92,3 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO db_user;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO db_user;
 
 
-ALTER TABLE users ALTER COLUMN sessionid DROP NOT NULL;
