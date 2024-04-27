@@ -12,6 +12,7 @@ const gyms = require("./src/routers/gyms");
 const roles = require("./src/routers/roles");
 const auth = require("./src/routers/auth");
 const sessions = require("./src/routers/sessions");
+const passes = require("./src/routers/passes");
 
 const limiter = rateLimit({
   windowMS: 15 * 60 * 1000,
@@ -35,6 +36,7 @@ app.use("/gyms", gyms);
 app.use("/roles", roles);
 app.use("/auth", auth);
 app.use("/sessions", sessions);
+app.use("/passes", passes);
 
 // Start the server
 const PORT = process.env.PORT || 5001; // Use the PORT environment variable or default to 3000
