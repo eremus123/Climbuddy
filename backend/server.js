@@ -11,6 +11,7 @@ const rateLimit = require("express-rate-limit");
 const gyms = require("./src/routers/gyms");
 const roles = require("./src/routers/roles");
 const auth = require("./src/routers/auth");
+const sessions = require("./src/routers/sessions");
 
 const limiter = rateLimit({
   windowMS: 15 * 60 * 1000,
@@ -33,6 +34,7 @@ app.use(express.urlencoded({ extended: false })); // Parse URL-encoded bodies
 app.use("/gyms", gyms);
 app.use("/roles", roles);
 app.use("/auth", auth);
+app.use("/sessions", sessions);
 
 // Start the server
 const PORT = process.env.PORT || 5001; // Use the PORT environment variable or default to 3000
