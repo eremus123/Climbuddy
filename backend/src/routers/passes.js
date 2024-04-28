@@ -4,7 +4,7 @@ const {
   getUserPasses,
   buyPasses,
   usePasses,
-  sellPasses,
+  clearPasses,
 } = require("../controllers/passes");
 const { authAdmin, authUser } = require("../middleware/auth.js");
 
@@ -17,7 +17,13 @@ const { errorCheck } = require("../validators/errorCheck");
 
 router.get("/:username", authUser, getUserPasses);
 router.put("/buy/:username", authUser, buyPasses, errorCheck);
-router.patch("/use/:username", authUser, usePasses, errorCheck);
-router.delete("/sell/:id", authUser, sellPasses, validateIdInParam, errorCheck);
+router.patch("/use/:id", authUser, usePasses, errorCheck);
+router.delete(
+  "/clear/:id",
+  authUser,
+  clearPasses,
+  validateIdInParam,
+  errorCheck
+);
 
 module.exports = router;
