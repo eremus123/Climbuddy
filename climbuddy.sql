@@ -13,12 +13,11 @@ CREATE TABLE gyms(
 );
 
 CREATE TABLE passes(
- id SERIAL PRIMARY KEY,
+ passid SERIAL PRIMARY KEY,
  username VARCHAR(20),
- purchasedate timestamp DEFAULT now(),
- expirydate timestamp,
- costprice SMALLINT,
- sellingprice SMALLINT,
+ purchasedate timestamp DEFAULT (now()), 
+ expirydate timestamp DEFAULT (now() + interval '1 year'),
+ cost SMALLINT,
  quantity SMALLINT,
  gymid INTEGER NOT NULL,
  CONSTRAINT fk_gym FOREIGN KEY (gymid) REFERENCES gyms(id)
@@ -37,14 +36,14 @@ CREATE TABLE users(
  username VARCHAR(20) PRIMARY KEY,
  hash TEXT,
  role VARCHAR(10) DEFAULT 'user',
- created_at timestamp DEFAULT now(),
+ created_at timestamp DEFAULT (now()),
  sessionid INTEGER,
  CONSTRAINT fk_session FOREIGN KEY (sessionid) REFERENCES sessions(id)
 );
 
 CREATE TABLE roles(
  role VARCHAR(10) PRIMARY KEY,
-  created_at timestamp DEFAULT now()
+  created_at timestamp DEFAULT (now())
 );
 
 INSERT INTO roles(role) VALUES ('user'),('admin');
