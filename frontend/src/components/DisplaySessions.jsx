@@ -2,6 +2,21 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
+function formatDateWithTime(isoDateString) {
+  const date = new Date(isoDateString);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "short" });
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 || 12; // Convert 24-hour format to 12-hour format
+
+  return `${day} ${month} ${year} @ ${hour12}:${
+    minutes < 10 ? "0" : ""
+  }${minutes} ${ampm}`;
+}
+
 const DisplaySessions = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
@@ -110,7 +125,9 @@ const DisplaySessions = (props) => {
       </div>
       {sessions.map((session) => (
         <div key={session.id} className="row">
-          <div className="col-sm-3">{session.sessiondate}</div>
+          <div className="col-sm-3">
+            {formatDateWithTime(session.sessiondate)}
+          </div>
           <div className="col-sm-3">{session.gymname}</div>
           <div className="col-sm-1">{session.hostname}</div>
           <div className="col-sm-1">{session.attendee}</div>

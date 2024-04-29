@@ -2,6 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
+function formatDate(isoDateString) {
+  const date = new Date(isoDateString);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+}
+
 const DisplayGym = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
@@ -118,8 +127,8 @@ const DisplayGym = (props) => {
       {passes.map((pass) => (
         <div key={pass.id} className="row">
           <div className="col-sm-3">{pass.gymname}</div>
-          <div className="col-sm-2">{pass.purchasedate}</div>
-          <div className="col-sm-2">{pass.expirydate}</div>
+          <div className="col-sm-2">{formatDate(pass.purchasedate)}</div>
+          <div className="col-sm-2">{formatDate(pass.expirydate)}</div>
           <div className="col-sm-1">{pass.costprice}</div>
           <div className="col-sm-1">{pass.quantity}</div>
           <button className="col-sm-1" onClick={() => usePass(pass.id)}>
