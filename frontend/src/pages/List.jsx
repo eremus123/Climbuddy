@@ -33,7 +33,7 @@ const List = () => {
 
   return (
     <>
-      <h1>Sessions</h1>
+      <h1>Groups</h1>
       <ul>
         {groups.map((group, index) => (
           <li key={index}>

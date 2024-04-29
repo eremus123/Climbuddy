@@ -11,6 +11,7 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 const List = React.lazy(() => import("./pages/List"));
 const Passes = React.lazy(() => import("./pages/Passes"));
 const Gyms = React.lazy(() => import("./pages/Gyms"));
+const Sessions = React.lazy(() => import("./pages/Sessions"));
 
 import NavBar from "./components/NavBar";
 
@@ -31,6 +32,7 @@ function App() {
             <Route path="main" element={<Main />} />
             <Route path="groups/:id" element={<Groups />} />
             <Route path="list" element={<List />} />
+            <Route path="sessions" element={<Sessions />} />
             <Route path="gyms" element={<Gyms />} />
             <Route path="passes" element={<Passes />} />
             <Route path="*" element={<NotFound />} />
