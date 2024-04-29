@@ -72,6 +72,38 @@ const DisplayGym = (props) => {
     }
   };
 
+  const usePass = async (sessionid) => {
+    const res = await fetchData(
+      "/passes/use/" + sessionid,
+      "PATCH",
+      {
+        quantity: 1,
+      },
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      getPasses();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
+  const deletePasses = async (passid) => {
+    const res = await fetchData(
+      "/passes/clear/" + passid,
+      "DELETE",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      getPasses();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
   return (
     <div className="container">
       <br />
@@ -90,10 +122,10 @@ const DisplayGym = (props) => {
           <div className="col-sm-2">{pass.expirydate}</div>
           <div className="col-sm-1">{pass.costprice}</div>
           <div className="col-sm-1">{pass.quantity}</div>
-          <button className="col-sm-1" onClick={() => joinSession(session.id)}>
+          <button className="col-sm-1" onClick={() => usePass(pass.id)}>
             Use Pass
           </button>
-          <button className="col-sm-1" onClick={() => leaveSession(session.id)}>
+          <button className="col-sm-1" onClick={() => deletePasses(pass.id)}>
             Delete Passes
           </button>
         </div>
