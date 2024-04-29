@@ -20,6 +20,14 @@ const NavBar = () => {
               className={(navData) => (navData.isActive ? styles.active : "")}
               to="/list"
             >
+              Groups
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className={(navData) => (navData.isActive ? styles.active : "")}
+              to="/sessions"
+            >
               Sessions
             </NavLink>
           </li>
