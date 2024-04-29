@@ -1,22 +1,28 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
 const DisplayGym = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
+  const [passes, setPasses] = useState([]);
   const fetchData = useFetch();
 
-  const nameRef = useRef();
-  const hoursRef = useRef();
-  const addressRef = useRef();
-  const resetRef = useRef();
+  const [purchaseDate, setPurchaseDate] = useState(
+    new Date().toISOString().split("T")[0]
+  ); // Default to today
+  const [expiryDate, setExpiryDate] = useState(
+    new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+      .toISOString()
+      .split("T")[0]
+  ); // Default to today + 1 year
+  const [quantity, setQuantity] = useState(10); // Default to 10
+  const [costPrice, setCostPrice] = useState(0);
 
   const getGyms = async () => {
     const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
     if (res.ok) {
       setGyms(res.data);
-      console.log(gyms);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -26,55 +32,40 @@ const DisplayGym = (props) => {
     getGyms();
   }, []);
 
-  const addGym = async () => {
+  const getPasses = async () => {
     const res = await fetchData(
-      "/gyms/addgym",
-      "PUT",
-      {
-        gymname: nameRef.current.value,
-        address: addressRef.current.value,
-        openinghours: hoursRef.current.value,
-        datereset: resetRef.current.value,
-      },
-      userCtx.accessToken
-    );
-    if (res.ok) {
-      getGyms();
-    } else {
-      alert(JSON.stringify(res.data));
-      console.log(res.data);
-    }
-  };
-
-  const deleteGym = async (id) => {
-    const res = await fetchData(
-      "/gyms/deletegym/" + id,
-      "DELETE",
+      "/passes/" + userCtx.username,
+      "GET",
       undefined,
       userCtx.accessToken
     );
     if (res.ok) {
-      getGyms();
+      setPasses(res.data);
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
     }
   };
+  useEffect(() => {
+    getPasses();
+  }, []);
 
-  const updateGym = async (id) => {
+  const buyPasses = async (gymid) => {
     const res = await fetchData(
-      "/gyms/updategym/" + id,
-      "PATCH",
+      "/passes/buy/" + userCtx.username,
+      "PUT",
       {
-        gymname: nameRef.current.value,
-        address: addressRef.current.value,
-        openinghours: hoursRef.current.value,
-        datereset: resetRef.current.value,
+        username: userCtx.username,
+        purchasedate: purchaseDate,
+        expirydate: expiryDate,
+        quantity: quantity,
+        costprice: costPrice,
+        gymid: gymid,
       },
       userCtx.accessToken
     );
     if (res.ok) {
-      getGyms();
+      getPasses();
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -83,76 +74,81 @@ const DisplayGym = (props) => {
 
   return (
     <div className="container">
-      {userCtx.role === "admin" && (
-        <>
-          <h1>Add New Gym: </h1>
-          <br />
-          <form>
-            <div className="row">
-              <input
-                type="text"
-                ref={nameRef}
-                placeholder="Gym Name"
-                className="col-md-2"
-              ></input>
-              <input
-                type="text"
-                ref={addressRef}
-                placeholder="Address"
-                className="col-md-2"
-              ></input>
-              <input
-                type="text"
-                ref={hoursRef}
-                placeholder="Opening Hours"
-                className="col-md-2"
-              ></input>
-              <input
-                type="text"
-                ref={resetRef}
-                placeholder="Last Reset"
-                className="col-md-2"
-              ></input>
-
-              <button
-                type="submit"
-                className="col-md-3"
-                onClick={() => addGym()}
-              >
-                Add
-              </button>
-            </div>
-          </form>
-          <br />
-        </>
-      )}
-
       <br />
-      <h2>All Gyms:</h2>
-
+      <h2>Manage Passes:</h2>
       <div className="row">
-        <div className="col-sm-3">Name</div>
-        <div className="col-sm-3">Opening Hours</div>
-        <div className="col-sm-3">Address</div>
-        <div className="col-sm-1">Last Reset</div>
+        <div className="col-sm-3">Gym Name</div>
+        <div className="col-sm-2">Purchase Date</div>
+        <div className="col-sm-2">Expiry Date</div>
+        <div className="col-sm-1">Cost</div>
+        <div className="col-sm-1">Quantity</div>
       </div>
-
+      {passes.map((pass) => (
+        <div key={pass.id} className="row">
+          <div className="col-sm-3">{pass.gymname}</div>
+          <div className="col-sm-2">{pass.purchasedate}</div>
+          <div className="col-sm-2">{pass.expirydate}</div>
+          <div className="col-sm-1">{pass.costprice}</div>
+          <div className="col-sm-1">{pass.quantity}</div>
+          <button className="col-sm-1" onClick={() => joinSession(session.id)}>
+            Use Pass
+          </button>
+          <button className="col-sm-1" onClick={() => leaveSession(session.id)}>
+            Delete Passes
+          </button>
+        </div>
+      ))}
+      <h2>Add Passes:</h2>
+      <div className="row">
+        <div className="col-sm-3">
+          <label htmlFor="purchaseDate">Purchase Date:</label>
+          <input
+            type="date"
+            id="purchaseDate"
+            value={purchaseDate}
+            onChange={(e) => setPurchaseDate(e.target.value)}
+          />
+        </div>
+        <div className="col-sm-3">
+          <label htmlFor="expiryDate">Expiry Date:</label>
+          <input
+            type="date"
+            id="expiryDate"
+            value={expiryDate}
+            onChange={(e) => setExpiryDate(e.target.value)}
+          />
+        </div>
+        <div className="col-sm-3">
+          <label htmlFor="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+        </div>
+        <div className="col-sm-3">
+          <label htmlFor="costPrice">Cost:</label>
+          <input
+            type="number"
+            id="costPrice"
+            value={costPrice}
+            onChange={(e) => setCostPrice(e.target.value)}
+          />
+        </div>
+      </div>
+      <br />
+      <div className="row">
+        <div className="col-sm-3">Gym Name</div>
+        <div className="col-sm-7">Address</div>
+      </div>
       {gyms.map((gym) => (
         <div key={gym.id} className="row">
           <div className="col-sm-3">{gym.gymname}</div>
-          <div className="col-sm-3">{gym.address}</div>
-          <div className="col-sm-3">{gym.openinghours}</div>
-          <div className="col-sm-1">{gym.datereset}</div>
-          {userCtx.role === "admin" && (
-            <>
-              <button className="col-sm-1" onClick={() => updateGym(gym.id)}>
-                Update
-              </button>
-              <button className="col-sm-1" onClick={() => deleteGym(gym.id)}>
-                Delete
-              </button>
-            </>
-          )}
+          <div className="col-sm-7">{gym.address}</div>
+          <button className="col-sm-2" onClick={() => buyPasses(gym.id)}>
+            I bought passes here!
+          </button>
         </div>
       ))}
     </div>
