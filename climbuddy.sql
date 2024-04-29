@@ -13,7 +13,7 @@ CREATE TABLE gyms(
 );
 
 CREATE TABLE passes(
- passid SERIAL PRIMARY KEY,
+ id SERIAL PRIMARY KEY,
  username VARCHAR(20),
  purchasedate timestamp DEFAULT (now()), 
  expirydate timestamp DEFAULT (now() + interval '1 year'),
