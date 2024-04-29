@@ -6,11 +6,8 @@ const DisplaySessions = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [sessionDate, setSessionDate] = useState(""); // New state for session date
   const fetchData = useFetch();
-
-  const sessiondateRef = useRef();
-  const hostnameRef = useRef();
-  const gymidRef = useRef();
 
   const getGyms = async () => {
     const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
@@ -28,7 +25,7 @@ const DisplaySessions = (props) => {
 
   const getSessions = async () => {
     const res = await fetchData(
-      "/sessions/" + username,
+      "/sessions/" + userCtx.username,
       "GET",
       undefined,
       userCtx.accessToken
@@ -45,14 +42,14 @@ const DisplaySessions = (props) => {
     getSessions();
   }, []);
 
-  const addSession = async () => {
+  const addSession = async (gymid) => {
     const res = await fetchData(
       "/sessions/new",
       "PUT",
       {
-        sessiondate: sessiondateRef.current.value,
-        hostname: hostnameRef.current.value,
-        gymid: gymidRef.current.value,
+        sessiondate: sessionDate, //prompt user to input timestamp datetime
+        hostname: userCtx.username,
+        gymid: gymid,
       },
       userCtx.accessToken
     );
@@ -64,11 +61,24 @@ const DisplaySessions = (props) => {
     }
   };
 
+  const handleSessionDateChange = (e) => {
+    setSessionDate(e.target.value);
+  };
+
   return (
     <div className="container">
       <br />
       <h2>Create New Session:</h2>
-
+      <form onSubmit={(e) => e.preventDefault()}>
+        <label>
+          Session Date:
+          <input
+            type="datetime-local"
+            value={sessionDate}
+            onChange={handleSessionDateChange}
+          />
+        </label>
+      </form>
       <div className="row">
         <div className="col-sm-3">Name</div>
         <div className="col-sm-3">Opening Hours</div>
@@ -83,7 +93,7 @@ const DisplaySessions = (props) => {
           <div className="col-sm-3">{gym.openinghours}</div>
           <div className="col-sm-1">{gym.datereset}</div>
 
-          <button className="col-sm-1" onClick={() => createSession(gym.id)}>
+          <button className="col-sm-1" onClick={() => addSession(gym.id)}>
             New Session
           </button>
         </div>
