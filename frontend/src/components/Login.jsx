@@ -19,6 +19,7 @@ const Login = (props) => {
       userCtx.setAccessToken(res.data.access);
       const decoded = jwtDecode(res.data.access);
       userCtx.setRole(decoded.role);
+      userCtx.setUsername(decoded.username);
     } else {
       alert(JSON.stringify(res.data));
     }

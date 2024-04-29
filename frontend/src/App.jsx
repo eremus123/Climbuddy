@@ -18,11 +18,19 @@ import NavBar from "./components/NavBar";
 function App() {
   const [accessToken, setAccessToken] = useState("");
   const [role, setRole] = useState("");
+  const [username, setUsername] = useState("");
   const [showLogin, setShowLogin] = useState(true); // Toggle between login and registration
 
   return (
     <UserContext.Provider
-      value={{ accessToken, setAccessToken, role, setRole }}
+      value={{
+        accessToken,
+        setAccessToken,
+        role,
+        setRole,
+        username,
+        setUsername,
+      }}
     >
       <Suspense fallback={<h1>loading...</h1>}>
         <NavBar />
