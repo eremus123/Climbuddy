@@ -19,7 +19,7 @@ const getUserSessions = async (req, res) => {
 const getAllSessions = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id"
+      "SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id ORDER BY sessions.sessiondate ASC;"
     );
     res.json(result.rows);
   } catch (error) {
@@ -75,6 +75,19 @@ const updateSession = async (req, res) => {
   }
 };
 
+const joinSession = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { username } = req.body; // if user wanna specify how many used other default to 1
+    const query = `UPDATE sessions SET attendee = $2 WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id, username]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error joining session" });
+  }
+};
+
 const deleteSession = async (req, res) => {
   try {
     const { id } = req.params;
@@ -97,4 +110,5 @@ module.exports = {
   updateSession,
   deleteSession,
   getUserSessions,
+  joinSession,
 };

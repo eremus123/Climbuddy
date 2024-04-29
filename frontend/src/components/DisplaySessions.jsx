@@ -25,7 +25,7 @@ const DisplaySessions = (props) => {
 
   const getSessions = async () => {
     const res = await fetchData(
-      "/sessions/" + userCtx.username,
+      "/sessions/",
       "GET",
       undefined,
       userCtx.accessToken
@@ -61,12 +61,67 @@ const DisplaySessions = (props) => {
     }
   };
 
+  const joinSession = async (sessionid) => {
+    const res = await fetchData(
+      "/sessions/join/" + sessionid,
+      "PATCH",
+      {
+        username: userCtx.username,
+      },
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      getSessions();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+  const leaveSession = async (sessionid) => {
+    const res = await fetchData(
+      "/sessions/join/" + sessionid,
+      "PATCH",
+      {
+        username: null,
+      },
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      getSessions();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
   const handleSessionDateChange = (e) => {
     setSessionDate(e.target.value);
   };
 
   return (
     <div className="container">
+      <br />
+      <h2>Join Sessions:</h2>
+      <div className="row">
+        <div className="col-sm-3">Session Date</div>
+        <div className="col-sm-3">Gym Name</div>
+        <div className="col-sm-1">Host</div>
+        <div className="col-sm-1">Attendee</div>
+      </div>
+      {sessions.map((session) => (
+        <div key={session.id} className="row">
+          <div className="col-sm-3">{session.sessiondate}</div>
+          <div className="col-sm-3">{session.gymname}</div>
+          <div className="col-sm-1">{session.hostname}</div>
+          <div className="col-sm-1">{session.attendee}</div>
+          <button className="col-sm-2" onClick={() => joinSession(session.id)}>
+            Join Session
+          </button>
+          <button className="col-sm-2" onClick={() => leaveSession(session.id)}>
+            Leave Session
+          </button>
+        </div>
+      ))}
       <br />
       <h2>Create New Session:</h2>
       <form onSubmit={(e) => e.preventDefault()}>
@@ -92,8 +147,7 @@ const DisplaySessions = (props) => {
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
           <div className="col-sm-1">{gym.datereset}</div>
-
-          <button className="col-sm-1" onClick={() => addSession(gym.id)}>
+          <button className="col-sm-2" onClick={() => addSession(gym.id)}>
             New Session
           </button>
         </div>

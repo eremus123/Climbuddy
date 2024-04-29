@@ -6,6 +6,7 @@ const {
   updateSession,
   deleteSession,
   getUserSessions,
+  joinSession,
 } = require("../controllers/sessions");
 const { authAdmin, authUser } = require("../middleware/auth.js");
 
@@ -20,6 +21,7 @@ router.get("", authUser, getAllSessions);
 router.get("/:username", authUser, getUserSessions);
 router.put("/new", addNewSession, authAdmin, errorCheck);
 router.patch("/update/:id", authAdmin, updateSession, errorCheck);
+router.patch("/join/:id", authUser, joinSession, errorCheck);
 router.delete(
   "/delete/:id",
   authAdmin,
