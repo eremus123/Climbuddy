@@ -129,13 +129,13 @@ const DisplayGym = (props) => {
           <div className="col-sm-3">{pass.gymname}</div>
           <div className="col-sm-2">{formatDate(pass.purchasedate)}</div>
           <div className="col-sm-2">{formatDate(pass.expirydate)}</div>
-          <div className="col-sm-1">{pass.costprice}</div>
-          <div className="col-sm-1">{pass.quantity}</div>
+          <div className="col-sm-1">{"$" + pass.costprice}</div>
+          <div className="col-sm-1">{pass.quantity + " passes"}</div>
           <button className="col-sm-1" onClick={() => usePass(pass.id)}>
             Use Pass
           </button>
           <button className="col-sm-1" onClick={() => deletePasses(pass.id)}>
-            Delete Passes
+            Delete
           </button>
         </div>
       ))}
