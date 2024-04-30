@@ -76,6 +76,21 @@ const DisplaySessions = (props) => {
     }
   };
 
+  const deleteSession = async (id) => {
+    const res = await fetchData(
+      "/sessions/delete/" + id,
+      "DELETE",
+      undefined,
+      userCtx.accessToken
+    );
+    if (res.ok) {
+      getSessions();
+    } else {
+      alert(JSON.stringify(res.data));
+      console.log(res.data);
+    }
+  };
+
   const joinSession = async (sessionid) => {
     const res = await fetchData(
       "/sessions/join/" + sessionid,
@@ -118,14 +133,14 @@ const DisplaySessions = (props) => {
       <br />
       <h2>Join Sessions:</h2>
       <div className="row">
-        <div className="col-sm-3">Session Date</div>
+        <div className="col-sm-2">Session Date</div>
         <div className="col-sm-3">Gym Name</div>
         <div className="col-sm-1">Host</div>
         <div className="col-sm-1">Attendee</div>
       </div>
       {sessions.map((session) => (
         <div key={session.id} className="row">
-          <div className="col-sm-3">
+          <div className="col-sm-2">
             {formatDateWithTime(session.sessiondate)}
           </div>
           <div className="col-sm-3">{session.gymname}</div>
@@ -137,6 +152,16 @@ const DisplaySessions = (props) => {
           <button className="col-sm-2" onClick={() => leaveSession(session.id)}>
             Leave Session
           </button>
+          {userCtx.role === "admin" && (
+            <>
+              <button
+                className="col-sm-1"
+                onClick={() => deleteSession(session.id)}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       ))}
       <br />
