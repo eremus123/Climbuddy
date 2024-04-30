@@ -28,6 +28,22 @@ const getAllSessions = async (req, res) => {
   }
 };
 
+const getUserLatestSession = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT gyms.*, sessions.sessiondate
+      FROM gyms
+      LEFT JOIN sessions ON gyms.id = sessions.gymid;
+      `
+    ); //LEFT JOIN so will also returns null from those gyms with no latest visit
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.json({ status: "error", msg: "error getting your sessions" });
+  }
+};
+
 const addNewSession = async (req, res) => {
   try {
     const { sessiondate, hostname, gymid } = req.body;
@@ -111,4 +127,5 @@ module.exports = {
   deleteSession,
   getUserSessions,
   joinSession,
+  getUserLatestSession,
 };
