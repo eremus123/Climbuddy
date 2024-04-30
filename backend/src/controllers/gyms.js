@@ -34,31 +34,16 @@ const updateGym = async (req, res) => {
   try {
     const { gymname, address, openinghours, resetdate } = req.body;
     const { gymId } = req.params;
-    // Dynamically construct the SET part of the query
-    let setClause = "";
-    let values = [];
-    let index = 1;
-    if (gymname !== undefined) {
-      setClause += `gymname = $${index++}, `;
-      values.push(gymname);
-    }
-    if (address !== undefined) {
-      setClause += `address = $${index++}, `;
-      values.push(address);
-    }
-    if (openinghours !== undefined) {
-      setClause += `openinghours = $${index++}, `;
-      values.push(openinghours);
-    }
-    if (resetdate !== undefined) {
-      setClause += `resetdate = $${index++}, `;
-      values.push(resetdate);
-    }
-    // Remove the trailing comma and space
-    setClause = setClause.slice(0, -2);
-    const query = `UPDATE gyms SET ${setClause} WHERE id = $${index} RETURNING *`;
-    values.push(gymId);
-
+    const query = `
+       UPDATE gyms
+       SET gymname = COALESCE($1, gymname),
+           address = COALESCE($2, address),
+           openinghours = COALESCE($3, openinghours),
+           resetdate = COALESCE($4, resetdate)
+       WHERE id = $5
+       RETURNING *
+     `;
+    const values = [gymname, address, openinghours, resetdate, gymId];
     const result = await pool.query(query, values);
     res.json(result.rows[0]);
   } catch (error) {
