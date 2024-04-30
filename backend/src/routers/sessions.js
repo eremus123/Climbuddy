@@ -19,7 +19,7 @@ const { errorCheck } = require("../validators/errorCheck");
 
 router.get("", authUser, getAllSessions);
 router.get("/:username", authUser, getUserSessions);
-router.put("/new", addNewSession, authAdmin, errorCheck);
+router.put("/new",authAdmin,addNewSession, errorCheck);
 router.patch("/update/:id", authAdmin, updateSession, errorCheck);
 router.patch("/join/:id", authUser, joinSession, errorCheck);
 router.delete(
