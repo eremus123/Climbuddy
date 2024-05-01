@@ -28,6 +28,22 @@ const getAllSessions = async (req, res) => {
   }
 };
 
+const getUserLatestSession = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT gyms.*, sessions.sessiondate
+      FROM gyms
+      LEFT JOIN sessions ON gyms.id = sessions.gymid;
+      `
+    ); //LEFT JOIN so will also returns null from those gyms with no latest visit
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.json({ status: "error", msg: "error getting your sessions" });
+  }
+};
+
 const addNewSession = async (req, res) => {
   try {
     const { sessiondate, hostname, gymid } = req.body;
@@ -46,26 +62,17 @@ const updateSession = async (req, res) => {
   try {
     const { sessiondate, hostname, gymid } = req.body;
     const { id } = req.params;
-    // Dynamically construct the SET part of the query
-    let setClause = "";
-    let values = [];
-    let index = 1;
-    if (sessiondate !== undefined) {
-      setClause += `sessiondate = $${index++}, `;
-      values.push(sessiondate);
-    }
-    if (hostname !== undefined) {
-      setClause += `hostname = $${index++}, `;
-      values.push(hostname);
-    }
-    if (gymid !== undefined) {
-      setClause += `gymid = $${index++}, `;
-      values.push(gymid);
-    }
-    // Remove the trailing comma and space
-    setClause = setClause.slice(0, -2);
-    const query = `UPDATE sesions SET ${setClause} WHERE id = ${index} RETURNING *`;
-    values.push(id);
+
+    const query = `
+       UPDATE sessions
+       SET sessiondate = COALESCE($1, sessiondate),
+           hostname = COALESCE($2, hostname),
+           gymid = COALESCE($3, gymid)
+       WHERE id = $4
+       RETURNING *
+     `;
+
+    const values = [sessiondate, hostname, gymid, id];
 
     const result = await pool.query(query, values);
     res.json(result.rows[0]);
@@ -111,4 +118,5 @@ module.exports = {
   deleteSession,
   getUserSessions,
   joinSession,
+  getUserLatestSession,
 };

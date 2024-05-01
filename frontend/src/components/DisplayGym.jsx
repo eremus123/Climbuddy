@@ -2,6 +2,17 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import useFetch from "../hooks/useFetch";
 import UserContext from "../context/user";
 
+function formatDate(isoDateString) {
+  if (!isoDateString || isNaN(new Date(isoDateString).getTime())) {
+    return "";
+  }
+  const date = new Date(isoDateString);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "short" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 const DisplayGym = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
@@ -13,7 +24,12 @@ const DisplayGym = (props) => {
   const resetRef = useRef();
 
   const getGyms = async () => {
-    const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
+    const res = await fetchData(
+      "/sessions/latest/" + userCtx.username,
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
     if (res.ok) {
       setGyms(res.data);
       console.log(gyms);
@@ -131,18 +147,25 @@ const DisplayGym = (props) => {
       <h2>All Gyms:</h2>
 
       <div className="row">
-        <div className="col-sm-3">Name</div>
-        <div className="col-sm-3">Opening Hours</div>
+        <div className="col-sm-2">Name</div>
         <div className="col-sm-3">Address</div>
+        <div className="col-sm-3">Opening Hours</div>
         <div className="col-sm-1">Last Reset</div>
+        {userCtx.role === "user" && (
+          <>
+            <div className="col-sm-1">Last Visit</div>
+          </>
+        )}
       </div>
 
       {gyms.map((gym) => (
         <div key={gym.id} className="row">
-          <div className="col-sm-3">{gym.gymname}</div>
+          <div className="col-sm-2">{gym.gymname}</div>
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
-          <div className="col-sm-1">{gym.datereset}</div>
+          <div className="col-sm-1">{formatDate(gym.datereset)}</div>
+          <div className="col-sm-1">{formatDate(gym.sessiondate)}</div>
+
           {userCtx.role === "admin" && (
             <>
               <button className="col-sm-1" onClick={() => updateGym(gym.id)}>
