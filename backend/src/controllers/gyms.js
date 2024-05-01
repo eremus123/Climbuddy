@@ -5,7 +5,9 @@ const pool = new Pool({
 
 const getAllGyms = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM gyms");
+    const result = await pool.query(
+      "SELECT * FROM gyms ORDER BY resetdate DESC"
+    );
     res.json(result.rows);
   } catch (error) {
     console.error(error.message);

@@ -42,7 +42,8 @@ const DisplayGym = (props) => {
     getGyms();
   }, []);
 
-  const addGym = async () => {
+  const addGym = async (event) => {
+    event.preventDefault();
     const res = await fetchData(
       "/gyms/addgym",
       "PUT",
@@ -50,7 +51,7 @@ const DisplayGym = (props) => {
         gymname: nameRef.current.value,
         address: addressRef.current.value,
         openinghours: hoursRef.current.value,
-        datereset: resetRef.current.value,
+        resetdate: resetRef.current.value,
       },
       userCtx.accessToken
     );
@@ -85,7 +86,7 @@ const DisplayGym = (props) => {
         gymname: nameRef.current.value,
         address: addressRef.current.value,
         openinghours: hoursRef.current.value,
-        datereset: resetRef.current.value,
+        resetdate: resetRef.current.value,
       },
       userCtx.accessToken
     );
@@ -103,7 +104,9 @@ const DisplayGym = (props) => {
         <>
           <h1>Add New Gym: </h1>
           <br />
-          <form>
+          <form onSubmit={addGym}>
+            {" "}
+            {/* Add the onSubmit event handler here */}
             <div className="row">
               <input
                 type="text"
@@ -124,18 +127,14 @@ const DisplayGym = (props) => {
                 className="col-md-2"
               ></input>
               <input
-                type="text"
+                type="date"
                 ref={resetRef}
                 placeholder="Last Reset"
                 className="col-md-2"
               ></input>
 
-              <button
-                type="submit"
-                className="col-md-3"
-                onClick={() => addGym()}
-              >
-                Add
+              <button type="submit" className="col-md-3">
+                Add New Gym
               </button>
             </div>
           </form>
@@ -163,9 +162,12 @@ const DisplayGym = (props) => {
           <div className="col-sm-2">{gym.gymname}</div>
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
-          <div className="col-sm-2">{formatDate(gym.datereset)}</div>
-          <div className="col-sm-2">{formatDate(gym.sessiondate)}</div>
-
+          <div className="col-sm-2">{formatDate(gym.resetdate)}</div>
+          {userCtx.role === "user" && (
+            <>
+              <div className="col-sm-2">{formatDate(gym.sessiondate)}</div>
+            </>
+          )}
           {userCtx.role === "admin" && (
             <>
               <button className="col-sm-1" onClick={() => updateGym(gym.id)}>
