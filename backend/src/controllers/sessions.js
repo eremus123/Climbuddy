@@ -34,7 +34,7 @@ const getUserLatestSession = async (req, res) => {
     const result = await pool.query(
       `SELECT gyms.*, sessions.sessiondate
       FROM gyms
-      LEFT JOIN sessions ON gyms.id = sessions.gymid;
+      LEFT JOIN sessions ON gyms.id = sessions.gymid ORDER BY gyms.resetdate ASC;
       `
     ); //LEFT JOIN so will also returns null from those gyms with no latest visit
     res.json(result.rows);
