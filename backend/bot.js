@@ -7,6 +7,11 @@ const pool = new Pool({
 
 const token = process.env.VITE_TELETOKEN;
 const bot = new TelegramBot(token, { polling: true });
+const cleanup = () => {
+  pool.end();
+};
+
+bot.on("shutdown", cleanup);
 
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "Welcome to Climbuddy How can I assist you?");
@@ -39,7 +44,6 @@ bot.onText(/\/allgyms/, async (msg) => {
     console.error("Error fetching gyms:", error);
     bot.sendMessage(msg.chat.id, "An error occurred while fetching gyms.");
   } finally {
-    pool.end();
   }
 });
 
@@ -47,32 +51,58 @@ bot.onText(/\/mypasses/, async (msg) => {
   const pool = await connectDB();
   try {
     const res = await pool.query(
-      `SELECT passes.*,gyms.gymname  FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = 'eremus' AND quantity > 0`
+      `SELECT passes.*, gyms.gymname, TO_CHAR(passes.expirydate, 'DD Mon YYYY') as formatted_expirydate
+        FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = 'eremus' AND quantity > 0`
     );
 
-    // Check if the exceeds the limit
     let passData = "Here are your passes:\n";
     res.rows.forEach((row) => {
-      passData += `${row.gymname} x${row.quantity}, expiring ${row.expirydate} \n`;
+      passData += `${row.gymname} x${row.quantity}, expires ${row.formatted_expirydate} \n`;
     });
-    // Split the message
-    if (passData.length > 4096) {
-      const chunkSize = 4096; // Maximum length for a single message
-      const chunks = [];
-      for (let i = 0; i < passData.length; i += chunkSize) {
-        chunks.push(passData.slice(i, i + chunkSize));
-      }
-      chunks.forEach((chunk) => {
-        bot.sendMessage(msg.chat.id, chunk);
-      });
-    } else {
-      bot.sendMessage(msg.chat.id, passData);
-    }
+
+    bot.sendMessage(msg.chat.id, passData);
   } catch (error) {
     console.error("Error fetching gyms:", error);
-    bot.sendMessage(msg.chat.id, "An error occurred while fetching gyms.");
+    bot.sendMessage(msg.chat.id, "An error occurred while fetching passes.");
   } finally {
-    pool.end();
+  }
+});
+
+bot.onText(/\/mysessions/, async (msg) => {
+  const pool = await connectDB();
+  try {
+    // Prompt the user for their username
+    const promptMessage = await bot.sendMessage(
+      msg.chat.id,
+      "Please enter your username:",
+      {
+        reply_markup: {
+          force_reply: true,
+        },
+      }
+    );
+    // Listen for the user's reply to the prompt
+    bot.onReplyToMessage(
+      msg.chat.id,
+      promptMessage.message_id,
+      async (replyMsg) => {
+        const username = replyMsg.text;
+        const res = await pool.query(
+          `SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE (hostname = '${username}' OR attendee = '${username}');`
+        );
+
+        let passData = "Here are your upcoming sessions:\n";
+        res.rows.forEach((row) => {
+          passData += `${row.sessiondate} @ ${row.gymname} \n`;
+        });
+
+        bot.sendMessage(msg.chat.id, passData);
+      }
+    );
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
+    bot.sendMessage(msg.chat.id, "An error occurred while fetching sessions.");
+  } finally {
   }
 });
 
