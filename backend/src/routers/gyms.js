@@ -5,6 +5,7 @@ const {
   addNewGym,
   updateGym,
   deleteGym,
+  getRecentVisits,
 } = require("../controllers/gyms");
 const { authAdmin, authUser } = require("../middleware/auth.js");
 
@@ -16,7 +17,8 @@ const {
 const { errorCheck } = require("../validators/errorCheck");
 
 router.get("", authUser, getAllGyms);
-router.put("/addgym", addNewGym, authAdmin, errorCheck);
+router.get("/:username", authUser, getRecentVisits);
+router.put("/addgym", authAdmin, addNewGym, errorCheck);
 router.patch("/updategym/:gymId", authAdmin, updateGym, errorCheck);
 router.delete(
   "/deletegym/:id",

@@ -68,9 +68,26 @@ const deleteGym = async (req, res) => {
   }
 };
 
+const getRecentVisits = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT gyms.*, sessions.sessiondate
+      FROM gyms
+      JOIN sessions ON gyms.id = sessions.gymid;
+      `
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.json({ status: "error", msg: "error getting your sessions" });
+  }
+};
+
 module.exports = {
   getAllGyms,
   addNewGym,
   updateGym,
   deleteGym,
+  getRecentVisits,
 };

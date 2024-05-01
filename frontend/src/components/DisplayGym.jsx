@@ -150,10 +150,10 @@ const DisplayGym = (props) => {
         <div className="col-sm-2">Name</div>
         <div className="col-sm-3">Address</div>
         <div className="col-sm-3">Opening Hours</div>
-        <div className="col-sm-1">Last Reset</div>
+        <div className="col-sm-2">Last Reset</div>
         {userCtx.role === "user" && (
           <>
-            <div className="col-sm-1">Last Visit</div>
+            <div className="col-sm-2">Last Visit</div>
           </>
         )}
       </div>
@@ -163,8 +163,8 @@ const DisplayGym = (props) => {
           <div className="col-sm-2">{gym.gymname}</div>
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
-          <div className="col-sm-1">{formatDate(gym.datereset)}</div>
-          <div className="col-sm-1">{formatDate(gym.sessiondate)}</div>
+          <div className="col-sm-2">{formatDate(gym.datereset)}</div>
+          <div className="col-sm-2">{formatDate(gym.sessiondate)}</div>
 
           {userCtx.role === "admin" && (
             <>
