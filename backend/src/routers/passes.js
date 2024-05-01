@@ -10,14 +10,25 @@ const { authAdmin, authUser } = require("../middleware/auth.js");
 
 const {
   validateIdInParam,
-  validateUserInBody,
-  validateAddGame,
+  validateUserInParam,
 } = require("../validators/games");
 const { errorCheck } = require("../validators/errorCheck");
 
-router.get("/:username", authUser, getUserPasses);
-router.put("/buy/:username", authUser, buyPasses, errorCheck);
-router.patch("/use/:id", authUser, usePasses, errorCheck);
+router.get(
+  "/:username",
+  authUser,
+  getUserPasses,
+  validateUserInParam,
+  errorCheck
+);
+router.put(
+  "/buy/:username",
+  authUser,
+  buyPasses,
+  validateUserInParam,
+  errorCheck
+);
+router.patch("/use/:id", authUser, usePasses, validateIdInParam, errorCheck);
 router.delete(
   "/clear/:id",
   authUser,

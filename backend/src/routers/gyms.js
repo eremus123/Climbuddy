@@ -11,15 +11,17 @@ const { authAdmin, authUser } = require("../middleware/auth.js");
 
 const {
   validateIdInParam,
-  validateUserInBody,
-  validateAddGame,
+  validateUserInParam,
+  validateAddGym,
 } = require("../validators/games");
 const { errorCheck } = require("../validators/errorCheck");
 
 router.get("", authUser, getAllGyms);
-router.get("/:username", authUser, getRecentVisits);
-router.put("/addgym", authAdmin, addNewGym, errorCheck);
-router.patch("/updategym/:gymId", authAdmin, updateGym, errorCheck);
+router.get("/:username", authUser, getRecentVisits),
+  validateUserInParam,
+  errorCheck;
+router.put("/addgym", authAdmin, addNewGym, validateAddGym, errorCheck);
+router.patch("/updategym/:gymId", authAdmin, updateGym);
 router.delete(
   "/deletegym/:id",
   authAdmin,
