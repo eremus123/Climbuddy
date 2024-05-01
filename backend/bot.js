@@ -10,7 +10,6 @@ const bot = new TelegramBot(token, { polling: true });
 const cleanup = () => {
   pool.end();
 };
-
 bot.on("shutdown", cleanup);
 
 bot.onText(/\/start/, (msg) => {
@@ -50,19 +49,37 @@ bot.onText(/\/allgyms/, async (msg) => {
 bot.onText(/\/mypasses/, async (msg) => {
   const pool = await connectDB();
   try {
-    const res = await pool.query(
-      `SELECT passes.*, gyms.gymname, TO_CHAR(passes.expirydate, 'DD Mon YYYY') as formatted_expirydate
-        FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = 'eremus' AND quantity > 0`
+    // Prompt the user for their username
+    const promptMessage = await bot.sendMessage(
+      msg.chat.id,
+      "Please enter your username:",
+      {
+        reply_markup: {
+          force_reply: true,
+        },
+      }
     );
+    // Listen for the user's reply to the prompt
+    bot.onReplyToMessage(
+      msg.chat.id,
+      promptMessage.message_id,
+      async (replyMsg) => {
+        const username = replyMsg.text;
+        const res = await pool.query(
+          `SELECT passes.*, gyms.gymname, TO_CHAR(passes.expirydate, 'DD Mon YYYY') as formatted_expirydate
+              FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = '${username}' AND quantity > 0`
+        );
 
-    let passData = "Here are your passes:\n";
-    res.rows.forEach((row) => {
-      passData += `${row.gymname} x${row.quantity}, expires ${row.formatted_expirydate} \n`;
-    });
+        let passData = "Here are your passes:\n";
+        res.rows.forEach((row) => {
+          passData += `${row.gymname} x${row.quantity}, expires ${row.formatted_expirydate} \n`;
+        });
 
-    bot.sendMessage(msg.chat.id, passData);
+        bot.sendMessage(msg.chat.id, passData);
+      }
+    );
   } catch (error) {
-    console.error("Error fetching gyms:", error);
+    console.error("Error fetching passes:", error);
     bot.sendMessage(msg.chat.id, "An error occurred while fetching passes.");
   } finally {
   }
@@ -81,6 +98,7 @@ bot.onText(/\/mysessions/, async (msg) => {
         },
       }
     );
+
     // Listen for the user's reply to the prompt
     bot.onReplyToMessage(
       msg.chat.id,
@@ -88,12 +106,13 @@ bot.onText(/\/mysessions/, async (msg) => {
       async (replyMsg) => {
         const username = replyMsg.text;
         const res = await pool.query(
-          `SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE (hostname = '${username}' OR attendee = '${username}');`
+          `SELECT sessions.*, gyms.gymname, TO_CHAR(sessions.sessiondate, 'Day, DD MON YYYY @ HH24:MI') as formatted_sessiondate
+              FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE (hostname = '${username}' OR attendee = '${username}') AND sessions.sessiondate > CURRENT_DATE`
         );
 
         let passData = "Here are your upcoming sessions:\n";
         res.rows.forEach((row) => {
-          passData += `${row.sessiondate} @ ${row.gymname} \n`;
+          passData += `${row.formatted_sessiondate} at ${row.gymname} \n`;
         });
 
         bot.sendMessage(msg.chat.id, passData);
