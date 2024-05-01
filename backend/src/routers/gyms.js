@@ -17,9 +17,13 @@ const {
 const { errorCheck } = require("../validators/errorCheck");
 
 router.get("", authUser, getAllGyms);
-router.get("/:username", authUser, getRecentVisits),
+router.get(
+  "/:username",
+  authUser,
+  getRecentVisits,
   validateUserInParam,
-  errorCheck;
+  errorCheck
+);
 router.put("/addgym", authAdmin, addNewGym, validateAddGym, errorCheck);
 router.patch("/updategym/:gymId", authAdmin, updateGym);
 router.delete(

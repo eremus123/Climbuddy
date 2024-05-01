@@ -76,7 +76,7 @@ const getRecentVisits = async (req, res) => {
     const result = await pool.query(
       `SELECT gyms.*, sessions.sessiondate
       FROM gyms
-      JOIN sessions ON gyms.id = sessions.gymid;
+      JOIN sessions ON gyms.id = sessions.gymid WHERE hostname= '${username}' OR attendee= '${username}';
       `
     );
     res.json(result.rows);

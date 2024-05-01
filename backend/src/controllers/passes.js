@@ -7,7 +7,7 @@ const getUserPasses = async (req, res) => {
   try {
     const { username } = req.params;
     const result = await pool.query(
-      `SELECT passes.*,gyms.gymname  FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = '${username}' AND quantity > 0`
+      `SELECT passes.*,gyms.gymname  FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = '${username}'AND quantity > 0`
     );
     res.json(result.rows);
   } catch (error) {
