@@ -110,9 +110,15 @@ const DisplayMain = (props) => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Set the time to 00:00:00 to compare only the date part
+
   const recentGyms = gyms.filter((gym) => {
     const sessionDate = new Date(gym.sessiondate);
     return sessionDate < today;
+  });
+
+  const recentSessions = sessions.filter((session) => {
+    const sessionDate = new Date(session.sessiondate);
+    return sessionDate > today;
   });
 
   return (
@@ -129,7 +135,7 @@ const DisplayMain = (props) => {
         </div>
       ))}
       <h2>Here are your upcoming sessions:</h2>
-      {sessions.map((session) => (
+      {recentSessions.map((session) => (
         <div key={session.id} className="row">
           <div className="col-sm-2">
             {formatDateWithTime(session.sessiondate)}
