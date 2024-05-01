@@ -124,6 +124,50 @@ bot.onText(/\/mysessions/, async (msg) => {
   } finally {
   }
 });
+bot.onText(/\/pastvisits/, async (msg) => {
+  const pool = await connectDB();
+  try {
+    // Prompt the user for their username
+    const promptMessage = await bot.sendMessage(
+      msg.chat.id,
+      "Please enter your username:",
+      {
+        reply_markup: {
+          force_reply: true,
+        },
+      }
+    );
+
+    bot.onReplyToMessage(
+      msg.chat.id,
+      promptMessage.message_id,
+      async (replyMsg) => {
+        const username = replyMsg.text;
+        const res = await pool.query(
+          `SELECT gyms.*, TO_CHAR(sessions.sessiondate, 'DD MON YYYY') as formatted_sessiondate
+             FROM gyms
+             JOIN sessions ON gyms.id = sessions.gymid
+             WHERE (hostname = '${username}' OR attendee = '${username}') AND sessions.sessiondate < CURRENT_DATE
+             ORDER BY sessions.sessiondate DESC;`
+        );
+
+        let pastVisitsData = "Here are your past sessions:\n";
+        res.rows.forEach((row) => {
+          pastVisitsData += `${row.gymname} - ${row.formatted_sessiondate} \n`;
+        });
+
+        bot.sendMessage(msg.chat.id, pastVisitsData);
+      }
+    );
+  } catch (error) {
+    console.error("Error fetching past visits:", error);
+    bot.sendMessage(
+      msg.chat.id,
+      "An error occurred while fetching past visits."
+    );
+  } finally {
+  }
+});
 
 // Listen for any kind of message
 bot.on("message", (msg) => {
