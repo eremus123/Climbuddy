@@ -4,6 +4,8 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./src/db/db");
 
+const telebot = require("./bot.js");
+
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
