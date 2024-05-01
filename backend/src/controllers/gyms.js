@@ -5,7 +5,9 @@ const pool = new Pool({
 
 const getAllGyms = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM gyms");
+    const result = await pool.query(
+      "SELECT * FROM gyms ORDER BY resetdate DESC"
+    );
     res.json(result.rows);
   } catch (error) {
     console.error(error.message);
@@ -68,9 +70,26 @@ const deleteGym = async (req, res) => {
   }
 };
 
+const getRecentVisits = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const result = await pool.query(
+      `SELECT gyms.*, sessions.sessiondate
+      FROM gyms
+      JOIN sessions ON gyms.id = sessions.gymid;
+      `
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.json({ status: "error", msg: "error getting your sessions" });
+  }
+};
+
 module.exports = {
   getAllGyms,
   addNewGym,
   updateGym,
   deleteGym,
+  getRecentVisits,
 };

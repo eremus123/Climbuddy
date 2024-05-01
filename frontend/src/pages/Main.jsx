@@ -1,19 +1,8 @@
-import React, { useContext } from "react";
-import UserContext from "../context/user"; // Adjust the import path as necessary
+import React from "react";
+import DisplayMain from "../components/DisplayMain";
 
-const Main = () => {
-  const userCtx = useContext(UserContext);
-
-  return (
-    <>
-      <h1>Welcome to Climbuddy!</h1>
-      <h2>Hello {userCtx.username}!</h2>
-      <h2>Here are your remaining passes:</h2>
-      <h2>Here are your upcoming sessions:</h2>
-
-      <h2>These are the gyms you've went recently:</h2>
-    </>
-  );
+const Main = (props) => {
+  return <DisplayMain></DisplayMain>;
 };
 
 export default Main;

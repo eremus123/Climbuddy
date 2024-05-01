@@ -25,7 +25,7 @@ CREATE TABLE passes(
 
 CREATE TABLE sessions(
  id SERIAL PRIMARY KEY,
- sessiondate DATE,
+ sessiondate timestamp DEFAULT (now()),
  hostname VARCHAR(20),
  attendee VARCHAR(20),
  gymid INTEGER NOT NULL,

@@ -11,7 +11,7 @@ function formatDate(isoDateString) {
   return `${day} ${month} ${year}`;
 }
 
-const DisplayGym = (props) => {
+const DisplayPasses = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
   const [passes, setPasses] = useState([]);
@@ -196,4 +196,4 @@ const DisplayGym = (props) => {
   );
 };
 
-export default DisplayGym;
+export default DisplayPasses;

@@ -93,7 +93,7 @@ const refresh = async (req, res) => {
       role: decoded.role,
     };
     const access = jwt.sign(claims, process.env.ACCESS_SECRET, {
-      expiresIn: "20m",
+      expiresIn: "60m",
       jwtid: uuidv4(),
     });
     res.json({ access });
