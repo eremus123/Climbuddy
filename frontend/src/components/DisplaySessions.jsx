@@ -17,6 +17,17 @@ function formatDateWithTime(isoDateString) {
   }${minutes} ${ampm}`;
 }
 
+function formatDate(isoDateString) {
+  if (!isoDateString || isNaN(new Date(isoDateString).getTime())) {
+    return "";
+  }
+  const date = new Date(isoDateString);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "short" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 const DisplaySessions = (props) => {
   const userCtx = useContext(UserContext);
   const [gyms, setGyms] = useState([]);
@@ -25,7 +36,12 @@ const DisplaySessions = (props) => {
   const fetchData = useFetch();
 
   const getGyms = async () => {
-    const res = await fetchData("/gyms", "GET", undefined, userCtx.accessToken);
+    const res = await fetchData(
+      "/sessions/latest/" + userCtx.username,
+      "GET",
+      undefined,
+      userCtx.accessToken
+    );
     if (res.ok) {
       setGyms(res.data);
       console.log(gyms);
@@ -70,6 +86,7 @@ const DisplaySessions = (props) => {
     );
     if (res.ok) {
       getSessions();
+      getGyms();
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -85,6 +102,7 @@ const DisplaySessions = (props) => {
     );
     if (res.ok) {
       getSessions();
+      getGyms();
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -102,6 +120,7 @@ const DisplaySessions = (props) => {
     );
     if (res.ok) {
       getSessions();
+      getGyms();
     } else {
       alert(JSON.stringify(res.data));
       console.log(res.data);
@@ -180,7 +199,7 @@ const DisplaySessions = (props) => {
         <div className="col-sm-3">Name</div>
         <div className="col-sm-3">Opening Hours</div>
         <div className="col-sm-3">Address</div>
-        <div className="col-sm-1">Last Reset</div>
+        <div className="col-sm-2">Last Visit</div>
       </div>
 
       {gyms.map((gym) => (
@@ -188,8 +207,9 @@ const DisplaySessions = (props) => {
           <div className="col-sm-3">{gym.gymname}</div>
           <div className="col-sm-3">{gym.address}</div>
           <div className="col-sm-3">{gym.openinghours}</div>
-          <div className="col-sm-1">{gym.datereset}</div>
-          <button className="col-sm-2" onClick={() => addSession(gym.id)}>
+          <div className="col-sm-2">{formatDate(gym.sessiondate)}</div>
+
+          <button className="col-sm-1" onClick={() => addSession(gym.id)}>
             New Session
           </button>
         </div>

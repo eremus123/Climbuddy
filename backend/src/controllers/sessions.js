@@ -7,7 +7,7 @@ const getUserSessions = async (req, res) => {
   try {
     const { username } = req.params;
     const result = await pool.query(
-      `SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE hostname = '${username}'`
+      `SELECT sessions.*, gyms.gymname FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE (hostname = '${username}' OR attendee = '${username}');`
     );
     res.json(result.rows);
   } catch (error) {
