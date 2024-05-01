@@ -17,7 +17,7 @@ CREATE TABLE passes(
  username VARCHAR(20),
  purchasedate timestamp DEFAULT (now()), 
  expirydate timestamp DEFAULT (now() + interval '1 year'),
- cost SMALLINT,
+ costprice SMALLINT,
  quantity SMALLINT,
  gymid INTEGER NOT NULL,
  CONSTRAINT fk_gym FOREIGN KEY (gymid) REFERENCES gyms(id)
