@@ -13,7 +13,14 @@ const cleanup = () => {
 bot.on("shutdown", cleanup);
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "Welcome to Climbuddy How can I assist you?");
+  bot.sendMessage(
+    msg.chat.id,
+    "Welcome to Climbuddy Here's what you can do:\n\n" +
+      "/allgyms - List all gyms in SG\n" +
+      "/mypasses - Check remaining passes and expiries\n" +
+      "/mysessions - View your upcoming sessions\n" +
+      "/pastvisits - See which gyms you've been to recently \n"
+  );
 });
 
 bot.onText(/\/allgyms/, async (msg) => {
