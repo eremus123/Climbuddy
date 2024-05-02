@@ -3,7 +3,7 @@
 Does your boardgame collection look like this: <img src="https://i.imgur.com/6gp7shc.jpeg"><img src="https://i.imgur.com/fFpySfG.jpeg"><img src="https://i.imgur.com/LUjIkvH.jpeg"><img src="https://i.imgur.com/6Avz8c6.jpeg">
 
 Or even worse, like this:
-<img src="https://i.imgur.com/fCeUffi.jpeg"><img src="https://i.imgur.com/UxCnaTS.jpeg">
+<img src="https://i.imgur.com/5wraOJa.gif"><img src="https://i.imgur.com/nGq4ZID.gif">
 
 Completely overwhelmed by the vast selection out there, or just trying to get started to build your collection but don't want to overlap with games that your friends already own? How do you even know which of your friends own 'that game'?
 
