@@ -1,14 +1,14 @@
 Climbuddy
 
 Bouldering:
-<img src="https://i.imgur.com/PKoA6U3.gif" width="300" >
-<img src="https://i.imgur.com/YpJQUAR.gif" width="300" >
+<img src="https://i.imgur.com/5wraOJa.gif" width="400" >
+<img src="https://i.imgur.com/nGq4ZID.gif" width="400" >
 
 Current way of managing passes:
-<img src="https://i.imgur.com/6gp7shc.jpeg" width="300">
-<img src="https://i.imgur.com/fFpySfG.jpeg" width="300">
-<img src="https://i.imgur.com/LUjIkvH.jpeg" width="300" >
-<img src="https://i.imgur.com/6Avz8c6.jpeg" width="300" >
+<img src="https://i.imgur.com/6gp7shc.jpeg" width="400">
+<img src="https://i.imgur.com/fFpySfG.jpeg" width="400">
+<img src="https://i.imgur.com/LUjIkvH.jpeg" width="400" >
+<img src="https://i.imgur.com/6Avz8c6.jpeg" width="400" >
 
 If only there was an easier way to keep track of not only your own collection, but also the groups that you often play with....
 
