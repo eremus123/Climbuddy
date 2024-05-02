@@ -3,8 +3,8 @@ Climbuddy
 Bouldering:
 
 <div style="display: flex; justify-content: space-between;">
-    <img src="https://i.imgur.com/5wraOJa.gif" width="300">
-    <img src="https://i.imgur.com/nGq4ZID.gif" width="300">
+    <img src="https://i.imgur.com/5wraOJa.gif" width="350">
+    <img src="https://i.imgur.com/nGq4ZID.gif" width="350">
 </div>
 
 Current way of managing passes:
