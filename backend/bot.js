@@ -71,7 +71,7 @@ bot.onText(/\/mypasses/, async (msg) => {
       msg.chat.id,
       promptMessage.message_id,
       async (replyMsg) => {
-        const username = replyMsg.text;
+        const username = replyMsg.text.toLowerCase().replace(/\s+/g, "");
         const res = await pool.query(
           `SELECT passes.*, gyms.gymname, TO_CHAR(passes.expirydate, 'DD Mon YYYY') as formatted_expirydate
               FROM passes JOIN gyms ON passes.gymid = gyms.id WHERE username = '${username}' AND quantity > 0`
@@ -111,7 +111,7 @@ bot.onText(/\/mysessions/, async (msg) => {
       msg.chat.id,
       promptMessage.message_id,
       async (replyMsg) => {
-        const username = replyMsg.text;
+        const username = replyMsg.text.toLowerCase().replace(/\s+/g, "");
         const res = await pool.query(
           `SELECT sessions.*, gyms.gymname, TO_CHAR(sessions.sessiondate, 'Day, DD MON YYYY @ HH24:MI') as formatted_sessiondate
               FROM sessions JOIN gyms ON sessions.gymid = gyms.id WHERE (hostname = '${username}' OR attendee = '${username}') AND sessions.sessiondate > CURRENT_DATE`
@@ -149,7 +149,7 @@ bot.onText(/\/pastvisits/, async (msg) => {
       msg.chat.id,
       promptMessage.message_id,
       async (replyMsg) => {
-        const username = replyMsg.text;
+        const username = replyMsg.text.toLowerCase().replace(/\s+/g, "");
         const res = await pool.query(
           `SELECT gyms.*, TO_CHAR(sessions.sessiondate, 'DD MON YYYY') as formatted_sessiondate
              FROM gyms
