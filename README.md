@@ -1,4 +1,4 @@
-Climbuddy
+# Climbuddy
 
 Hey fellow climbers, always struggling to figure out if the gym you wanna go to is already reshuffled? Or ended up forgetting about a few passes that end up expiring:
 <br>
