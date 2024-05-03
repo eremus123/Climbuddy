@@ -83,6 +83,7 @@ For contribution or if you want a copy to build on it : clone and `npm i`
 - Sessions - Allow for multiple attendees to join a session
 - Passes - Allow for trading of passes between users
 - Equipment Page - To keep track of your current and past equipments and sizes
+- Groups - Allow for creating and joining different climbing groups and arrange sessions all at once
 - Telebot (Try it out @climbuddybot hehe) - Allow for users to login and manage their passes/sessions directly from the telegram bot instead of having to login via the webapp.
 
 ## License/Credits/References
