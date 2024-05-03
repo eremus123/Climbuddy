@@ -1,82 +1,92 @@
 Climbuddy
 
-Bouldering:
-
-<div style="display: flex; justify-content: space-between;">
-    <img src="https://i.imgur.com/5wraOJa.gif" width="350">
-    <img src="https://i.imgur.com/nGq4ZID.gif" width="350">
-</div>
-
-Current way of managing passes:
+Hey fellow climbers, always struggling to figure out if the gym you wanna go to is already reshuffled? Or ended up forgetting about a few passes that end up expiring:
 <br>
 <img src="https://i.imgur.com/6gp7shc.jpeg" width="400">
 <img src="https://i.imgur.com/fFpySfG.jpeg" width="400">
 <img src="https://i.imgur.com/LUjIkvH.jpeg" width="400" >
 <img src="https://i.imgur.com/6Avz8c6.jpeg" width="400" >
 
-If only there was an easier way to keep track of not only your own collection, but also the groups that you often play with....
+If only there was an easier way to keep track of which gyms you've went to and keep track of your passes with your climbing buddies so you'll be able to organize your next session with ease... meet Climbuddy!
 
 # Screenshots
 
-### Welcome Screen:
+### Main Screen:
 
-See the top 50 hottest games on BGG right now!
-<img src="https://i.imgur.com/w2rJoVp.jpeg">
+View your upcoming sessions, see your remaining passes and the dates of your previous visits to the different gyms:
+<img src="https://i.imgur.com/Zdk4w4B.jpeg">
 
-### Group Screen:
+### Sessions Screen:
 
-Select the group to view games that the group owns:
-<img src="https://imgur.com/rhN0gwy.jpeg">
-Search/browse the games within your group:
-<img src="https://imgur.com/7ifTC2c.jpeg">
+Host a session or join sessions that your friends have hosted:
+<img src="https://imgur.com/B7LcboY.jpeg">
 
-### Users Screen:
+### Passes Screen:
 
-Select from the existing users to view all games of a particular user (currently limited to 100 games)
-<img src="https://imgur.com/kmXaG9H.jpeg">
-Edit or Update the games in your collection:
-<img src="https://imgur.com/Jc2BneR.jpeg">
+Keep track of the passes from the different gyms, including their expiry dates and prices:
+<img src="https://imgur.com/2PyCUDX.jpeg">
 
-### Games Screen:
+### Gyms Screen:
 
-Search for a new game to the collection, or view/edit the most recently added games:
-<img src="https://imgur.com/xrhnuQR.jpeg">
-After Searching for a game, fill in the details and add it to your wishlist or to your collection
-<img src="https://imgur.com/d67j4Wh.jpeg">
+View the directory of gyms in Singapore and also see when they were last reset compared to your last visit:
+<img src="https://imgur.com/uuZ1n3J.jpeg">
 
-# Technologies Used
+## Technologies Used
 
-- JavaScript JSX
-- React
-- PostgreSQL
-- Express.js
-- CSS
+- HTML ![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)
+- CSS ![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css3&logoColor=fff)
+- JavaScript ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)
+- JWT Authentication
+- PERN (Postgresql, Express, React, Node)
+  ![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)
+  ![Express.js](https://img.shields.io/badge/Express.js-%23404d59.svg?logo=express&logoColor=%2361DAFB)
+  ![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)
+  ![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)
 
-# Getting Started
+## Getting Started
 
-1. Clone this repo and install cors-anywhere via "npm install cors-anywhere"
-2. A folder titled node_modules should be auto-generated containing the CORS Anywhere installation.
-3. In \node_modules\cors-anywhere (cd node_modules\cors-anywhere) you should find a file called server.js.
-4. Run the node via "node server.js"
-5. You should see something like the following if the server started correctly: Running CORS Anywhere on 127.0.0.1:8080.
-6. In a new terminal, run the React App via "npm run dev"
-7. Access the app interface via localhost. (http://localhost:5173/)
+Create an account and start using the app!
+For contribution or if you want a copy to build on it : clone and `npm i`
 
-# Next Steps
+### Frontend
 
-- Include ratings in the game search feature / Allow for your own ratings
-- Login directly to BGG to save to your own collections and stats
-- Keep track of the number of plays for each game that you own.
-- Suggest recommended games that you might like based on your own collection
-- Don't know which game to play? Introducing a randomizer to pick a game that your group owns!
-- Support for more than 100 games displayed
-- Handle duplicate games / Check if game already exists before adding into collection
-- Enhance UI/UX with nicer loading animations/interfaces
+- React-router-dom : `npm i react-router-dom`
+- JWT : `npm i jwt-decode`
 
-# Acknowledgements & References
+### Backend
 
-- Airtable API Docs: https://airtable.com/appnFG2kbIVgZNH8a/api/docs#curl/table:boardgames
-- BGG XML API2: https://boardgamegeek.com/wiki/page/BGG_XML_API2
-- BGG XML API2 Guide: https://www.tayloraliss.com/bggapi/index.html
-- User Languages App: https://git.generalassemb.ly/sei-sg/sei-sg-49-labs/tree/main/unit2/3-user-languages-app/eremus/languagesapp
+- `npm init -y`
+- `npm i express`
+- `npm i -D nodemon`
+- `npm i express-validator`
+- `npm i jsonwebtoken uuid bcrypt`
+- `npm i cors helmet express-rate-limit`
+- `npm i express pg`
+
+### .env keys
+
+#### Frontend and backend
+
+```
+- POSTGRES_URI
+- PORT=5001
+- VITE_APP_API_KEY
+- ACCESS_SECRET
+- REFRESH_SECRET
+- VITE_SERVER
+- VITE_TELETOKEN
+
+```
+
+## Future Plans
+
+- Sessions - Allow for multiple attendees to join a session
+- Passes - Allow for trading of passes between users
+- Equipment Page - To keep track of your current and past equipments and sizes
+- Telebot - Allow for users to login and manage their passes/sessions directly from the telegram bot instead of having to login via the webapp.
+
+## License/Credits/References
+
 - Debugging: ChatGPT 3.5
+- Entity Relationship Diagram:
+  <img src="https://i.imgur.com/sU78gkK.jpeg">
