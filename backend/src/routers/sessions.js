@@ -32,7 +32,7 @@ router.get(
   validateUserInParam,
   errorCheck
 );
-router.put("/new", addNewSession, authAdmin, errorCheck);
+router.put("/new", authAdmin, addNewSession, errorCheck);
 router.patch(
   "/update/:id",
   authAdmin,
